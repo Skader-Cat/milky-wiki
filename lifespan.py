@@ -5,6 +5,7 @@ from starlette.requests import Request
 from db import DatabaseManager
 import settings
 from service import UserManager
+from service.project import ProjectManager
 
 
 @asynccontextmanager
@@ -16,6 +17,7 @@ async def main_app_lifespan(app: FastAPI):
     app.state.db = await DB_Manager.get_session()
 
     UserManager.db = app.state.db
+    ProjectManager.db = app.state.db
 
     try:
         yield

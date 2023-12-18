@@ -14,7 +14,7 @@ auth_router = APIRouter()
 
 @auth_router.post("/token")
 async def login_for_access_token(request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user = await AuthManager.authenticate(form_data, request.app.state.db)
+    user = await AuthManager.authenticate(form_data)
     if not user:
         return {"error": "Incorrect email or password"}
     access_token = AuthManager.create_access_token(data={"sub": user.id})
@@ -22,7 +22,7 @@ async def login_for_access_token(request: Request, form_data: Annotated[OAuth2Pa
 
 @auth_router.post("/login")
 async def login(request: Request, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    user = await AuthManager.authenticate(form_data, request.app.state.db)
+    user = await AuthManager.authenticate(form_data)
     if not user:
         return {"error": "Incorrect email or password"}
     access_token = AuthManager.create_access_token(data={"id": str(user.id), "email": user.email})
