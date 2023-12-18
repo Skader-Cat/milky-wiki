@@ -1,21 +1,18 @@
 from sqlalchemy import select, insert, update, delete
 
+from db import DatabaseManager, DB_Manager
 
-class Manager():
-    db = None
 
+class Manager:
     @classmethod
     async def _execute_query(cls, query):
-        async with cls.db as session:
+        async with await DB_Manager.get_session() as session:
             result = await session.execute(query)
-            await session.commit()
             return result
 
     @classmethod
     async def _execute_query_and_close(cls, query):
         result = await cls._execute_query(query)
-        session = cls.db
-        await session.close()
         return result
 
     @classmethod
@@ -35,12 +32,10 @@ class Manager():
         query = insert(model).values(data)
         await cls._execute_query_and_close(query)
 
-
     @classmethod
     async def update(cls, model, id, data):
         query = update(model).where(model.id == id).values(data)
         await cls._execute_query_and_close(query)
-
 
     @classmethod
     async def delete(cls, model, id):

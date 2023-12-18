@@ -39,3 +39,11 @@ async def read_users(page: int = 1, size: int = 10):
 @users_router.get("/get_by_email", response_model=schemas.UserResponse)
 async def get_user_by_email(email: str):
     return await UserManager.get_user_by_email(email)
+
+@users_router.get("/get_role", response_model=schemas.UserResponse)
+async def get_user_role(user_id: str):
+    return await UserManager.get_user_role(user_id)
+
+@users_router.get("/get_projects")
+async def get_user_projects(user_id: str):
+    return await UserManager.get_user_projects(user_id)

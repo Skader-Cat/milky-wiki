@@ -2,34 +2,30 @@ import sqlalchemy
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-AsyncSessionLocal = async_sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=None,
-    expire_on_commit=False,
-    class_=AsyncSession
-)
-
 class DatabaseManager:
     engine = None
-    conn = None
-    session = None
+    session_factory = None
 
     async def create_db_engine(self, settings):
         self.engine = create_async_engine(
             url=settings.DatabaseSettings().GET_DB_URL,
             echo=settings.DevelopmentSettings.DEBUG,
+            pool_size=settings.DatabaseSettings.DB_POOL_SIZE,
+            max_overflow=settings.DatabaseSettings.DB_MAX_OVERFLOW,
+            pool_timeout=settings.DatabaseSettings.DB_POOL_TIMEOUT
         )
-
-        AsyncSessionLocal.configure(bind=self.engine)
 
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
 
-        return self.engine, conn
+        self.session_factory = async_sessionmaker(
+            bind=self.engine,
+            class_=AsyncSession,
+            expire_on_commit=False
+        )
 
     async def get_session(self):
-        return AsyncSessionLocal(bind=self.engine)
+        return self.session_factory()
 
     async def close_engine(self):
         await self.engine.dispose()
@@ -42,4 +38,4 @@ class DatabaseManager:
 
 
 Base = declarative_base()
-
+DB_Manager = DatabaseManager()

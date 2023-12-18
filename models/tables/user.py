@@ -5,7 +5,6 @@ from sqlalchemy import Column, UUID, String, DateTime
 from sqlalchemy.orm import Relationship
 
 from db import Base
-from models.tables.project import Project_User
 
 
 class User(Base):

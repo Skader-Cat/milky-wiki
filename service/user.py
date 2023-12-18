@@ -1,6 +1,6 @@
-import logging
+from sqlalchemy import select
 
-from sqlalchemy import select, insert, delete, update
+from models.tables.project import Project_User, Project
 from models.tables.user import User
 from service.base import Manager
 
@@ -47,3 +47,15 @@ class UserManager(Manager):
         query = select(User)
         result = await cls._execute_query_and_close(query)
         return len(result.scalars().all())
+
+    @classmethod
+    async def get_user_role(cls, user_id):
+        query = select(User.role).filter(User.id == user_id)
+        result = await cls._execute_query_and_close(query)
+        return result.scalars().first()[0]
+
+    @classmethod
+    async def get_user_projects(cls, user_id):
+        projects = select(Project).join(Project_User).filter(Project_User.user_id == user_id)
+        result = await cls._execute_query_and_close(projects)
+        return result.scalars().all()

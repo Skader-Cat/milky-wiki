@@ -1,6 +1,3 @@
-from sqlalchemy import Enum
-from starlette.responses import HTMLResponse
-
 import credits
 
 class BaseSettingsClass:
@@ -16,6 +13,9 @@ class DatabaseSettings(BaseSettingsClass):
     USER = credits.DB.USER
     PASSWORD = credits.DB.PASSWORD
     DB_NAME = credits.DB.DB_NAME
+    DB_POOL_SIZE = credits.DB.POOL_SIZE
+    DB_MAX_OVERFLOW = credits.DB.MAX_OVERFLOW
+    DB_POOL_TIMEOUT = credits.DB.POOL_TIMEOUT
 
     @property
     def GET_DB_URL(self):
@@ -45,3 +45,12 @@ class AppSettings(BaseSettingsClass):
     SERVER_HOST = 'localhost'
     SERVER_PORT = 8000
 
+
+class CORSSettings(BaseSettingsClass):
+    ALLOW_ORIGINS = ['*']
+    ALLOW_METHODS = ['*']
+    ALLOW_HEADERS = ['*']
+    ALLOW_CREDENTIALS = True
+    ALLOW_ORIGIN_REGEX = None
+    EXPOSE_HEADERS = []
+    MAX_AGE = 600

@@ -2,7 +2,6 @@ from sqlalchemy import select, insert, delete
 
 from models.tables import User
 from models.tables.project import Project, Project_User
-from service import UserManager
 from service.base import Manager
 
 
@@ -30,6 +29,13 @@ class ProjectManager(Manager):
     @classmethod
     async def delete_project(cls, project_id):
         await cls.delete(Project, project_id)
+
+
+    @classmethod
+    async def get_project_list_by_user(cls, user_id):
+        projects = select(Project).join(Project_User).filter(Project_User.user_id == user_id)
+        result = await cls._execute_query_and_close(projects)
+        return result.scalars().all()
 
     @classmethod
     async def get_project_by_name(cls, name) -> Project:
