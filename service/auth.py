@@ -40,7 +40,10 @@ class AuthManager(Manager):
         payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
         user_id: UUID =  payload.get("id")
         if user_id is None:
-            raise Exception("Invalid token")
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        elif not await UserManager.get_user_by_id(user_id):
+            raise HTTPException(status_code=404, detail="User not found")
+
         return await UserManager.get_user_by_id(user_id)
 
     @classmethod

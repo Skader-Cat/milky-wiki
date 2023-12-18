@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from models import schemas
 from service import UserManager
@@ -19,6 +19,8 @@ async def delete_user(user_id: str):
 
 @users_router.get("/me", response_model=schemas.UserResponse)
 async def read_users_me(current_user: schemas.UserResponse = Depends(AuthManager.get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     return current_user
 
 @users_router.get("/user/{user_id}", response_model=schemas.UserResponse)
