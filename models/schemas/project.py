@@ -6,28 +6,27 @@ from pydantic import BaseModel
 
 class ProjectFull(BaseModel):
     id: UUID
-    name: str
+    title: str
     description: Optional[str] = None
-    owner: str
+    owner_id: UUID
     users: list[str]
     created_at: str
     updated_at: str
 
 class ProjectCreate(BaseModel):
-    name: str
+    title: str
     description: Optional[str] = None
-    owner: str
 
 class ProjectUpdate(BaseModel):
-    name: str
+    title: str
     description: Optional[str] = None
-    owner: str
+    owner_id: str
 
 class ProjectResponse(BaseModel):
     id: UUID
-    name: str
+    title: str
     description: Optional[str] = None
-    owner: str
+    owner_id: UUID
     created_at: str
     updated_at: str
 

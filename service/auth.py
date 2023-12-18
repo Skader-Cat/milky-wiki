@@ -25,8 +25,8 @@ class AuthManager(object):
         return cls.pwd_context.hash(password)
 
     @classmethod
-    async def authenticate(cls, form_data, db):
-        user = await UserManager.get_user_by_email(form_data.username, db)
+    async def authenticate(cls, form_data):
+        user = await UserManager.get_user_by_email(form_data.username)
         if not user:
             return False
         print(form_data.password, user.password)

@@ -11,3 +11,4 @@ app = FastAPI(
 
 app.include_router(controllers.auth_router, prefix="/auth", tags=["auth"])
 app.include_router(controllers.users_router, prefix="/users", tags=["users"])
+app.include_router(controllers.projects_router, prefix="/projects", tags=["projects"])

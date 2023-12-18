@@ -20,6 +20,6 @@ class Project(Base):
     title = Column(String)
     description = Column(String)
     owner_id = Column(UUID(as_uuid=True))
-    users = Relationship("User", secondary=Project_User, back_populates="projects")
+    users = Relationship("User", secondary="project_user", back_populates="projects")
     created_at = Column(DateTime, default=datetime.datetime.now())
     updated_at = Column(DateTime, default=datetime.datetime.now())
