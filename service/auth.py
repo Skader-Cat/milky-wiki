@@ -1,9 +1,12 @@
+import datetime
 from uuid import UUID
 
+from fastapi import HTTPException
 from jose import jwt
 from passlib.context import CryptContext
 
 import credits
+from models.tables import User
 from service import UserManager
 
 
@@ -32,7 +35,7 @@ class AuthManager(object):
         return user
 
     @classmethod
-    async def get_current_user(cls, token: str):
+    async def get_current_user(cls, token: str) -> User:
         payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
         user_id: UUID =  payload.get("id")
         if user_id is None:
@@ -40,7 +43,20 @@ class AuthManager(object):
         return await UserManager.get_user_by_id(user_id)
 
     @classmethod
-    def create_access_token(cls, data: dict):
+    async def get_admin_user(cls, token: str) -> User:
+        payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
+        user_id: UUID =  payload.get("id")
+        if user_id is None:
+            raise Exception("Invalid token")
+        user = await UserManager.get_user_by_id(user_id)
+        if user.role != "admin":
+            raise HTTPException(status_code=403, detail="Unauthorized user")
+        return user
+
+    @classmethod
+    def create_access_token(cls, data: dict) -> str:
         to_encode = data.copy()
+        expires = datetime.datetime.now() + datetime.timedelta(minutes=credits.AUTH.ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode.update({"exp": expires})
         encoded_jwt = jwt.encode(to_encode, credits.AUTH.SECRET_KEY, algorithm=credits.AUTH.ALGORITHM)
         return encoded_jwt
