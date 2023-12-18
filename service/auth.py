@@ -8,9 +8,10 @@ from passlib.context import CryptContext
 import credits
 from models.tables import User
 from service import UserManager
+from service.base import Manager
 
 
-class AuthManager(object):
+class AuthManager(Manager):
     pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
     def __init__(self):

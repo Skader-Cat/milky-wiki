@@ -18,6 +18,12 @@ async def get_project_list(page: int = 1, size: int = 10):
     total_projects = await ProjectManager.get_total_projects()
     return {"projects": projects, "total": total_projects, "page": page, "size": size}
 
+@projects_router.get("/list_by_user")
+async def get_project_list_by_user(user_id: str, page: int = 1, size: int = 10):
+    projects = await ProjectManager.get_project_list_by_user(user_id, page, size)
+    total_projects = await ProjectManager.get_total_projects()
+    return {"projects": projects, "total": total_projects, "page": page, "size": size}
+
 @projects_router.get("/get_by_name")
 async def get_project_by_name(name: str):
     return await ProjectManager.get_project_by_name(name)
