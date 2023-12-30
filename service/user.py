@@ -1,5 +1,6 @@
 from sqlalchemy import select
 
+from models import schemas
 from models.tables.project import Project_User, Project
 from models.tables.user import User
 from service.base import Manager
@@ -9,8 +10,14 @@ class UserManager(Manager):
     db = None
 
     @classmethod
-    async def get_user_by_id(cls, user_id) -> User:
+    async def get_user_by_id(cls, user_id) -> schemas.UserResponse:
         return await cls.get_by_id(User, user_id)
+
+    @classmethod
+    async def search_user(cls, search_query, page, size):
+        query = select(User).filter(User.username.like(f"%{search_query}%")).offset((page - 1) * size).limit(size)
+        result = await cls._execute_query_and_close(query)
+        return result.scalars().all()
 
     @classmethod
     async def get_user_list(cls, page, size):
@@ -58,4 +65,10 @@ class UserManager(Manager):
     async def get_user_projects(cls, user_id):
         projects = select(Project).join(Project_User).filter(Project_User.user_id == user_id)
         result = await cls._execute_query_and_close(projects)
+        return result.scalars().all()
+
+    @classmethod
+    async def search(cls, search_query, page, size):
+        query = select(User).filter(User.username.like(f"%{search_query}%")).offset((page - 1) * size).limit(size)
+        result = await cls._execute_query_and_close(query)
         return result.scalars().all()

@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from models import schemas
@@ -16,6 +18,10 @@ async def create_user(user: schemas.UserCreate):
 @users_router.delete("/delete")
 async def delete_user(user_id: str):
     await UserManager.delete_user(user_id)
+
+@users_router.get("/search", response_model=List[schemas.UserResponse])
+async def search_user(query: str, page: int = 1, size: int = 10):
+    return await UserManager.search_user(query, page, size)
 
 @users_router.get("/me", response_model=schemas.UserResponse)
 async def read_users_me(current_user: schemas.UserResponse = Depends(AuthManager.get_current_user)):

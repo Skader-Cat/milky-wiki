@@ -24,3 +24,6 @@ app.add_middleware(CORSMiddleware,
 app.include_router(controllers.auth_router, prefix="/auth", tags=["auth"])
 app.include_router(controllers.users_router, prefix="/users", tags=["users"])
 app.include_router(controllers.projects_router, prefix="/projects", tags=["projects"])
+app.include_router(controllers.notes_router, prefix="/notes", tags=["notes"])
+app.include_router(controllers.category_router, prefix="/category", tags=["category"])
+app.include_router(controllers.glossary_router, prefix="/glossary", tags=["glossary"])

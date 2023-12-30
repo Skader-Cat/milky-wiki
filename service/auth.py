@@ -2,20 +2,32 @@ import datetime
 from uuid import UUID
 
 from fastapi import HTTPException
-from jose import jwt
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
 from passlib.context import CryptContext
+from sqlalchemy.sql import roles
+from starlette import status
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 import credits
+import settings
+from models import schemas
 from models.tables import User
 from service import UserManager
 from service.base import Manager
 
-
 class AuthManager(Manager):
     pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
     def __init__(self):
         pass
+
+    @classmethod
+    async def logout(cls, request):
+        request.state.user = None
+
 
     @classmethod
     def verify_password(cls, password, hashed_password):
@@ -36,26 +48,33 @@ class AuthManager(Manager):
         return user
 
     @classmethod
-    async def get_current_user(cls, token: str) -> User:
-        payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
-        user_id: UUID =  payload.get("id")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Unauthorized")
-        elif not await UserManager.get_user_by_id(user_id):
-            raise HTTPException(status_code=404, detail="User not found")
+    async def get_current_user(cls, token: str) -> schemas.UserResponse:
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-        return await UserManager.get_user_by_id(user_id)
+        try:
+            payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
+            id: str = payload.get("id")
+            if id is None:
+                raise credentials_exception
+        except JWTError:
+            raise credentials_exception
 
-    @classmethod
-    async def get_admin_user(cls, token: str) -> User:
-        payload = jwt.decode(token, credits.AUTH.SECRET_KEY, algorithms=[credits.AUTH.ALGORITHM])
-        user_id: UUID =  payload.get("id")
-        if user_id is None:
-            raise Exception("Invalid token")
-        user = await UserManager.get_user_by_id(user_id)
-        if user.role != "admin":
-            raise HTTPException(status_code=403, detail="Unauthorized user")
-        return user
+        user = await UserManager.get_user_by_id(id)
+        if not user:
+            raise credentials_exception
+
+        if user.role not in settings.ALLOWED_ROLES.get_properties():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+
+        return await UserManager.get_user_by_id(user.id)
+
 
     @classmethod
     def create_access_token(cls, data: dict) -> str:
