@@ -54,3 +54,18 @@ class CORSSettings(BaseSettingsClass):
     ALLOW_ORIGIN_REGEX = None
     EXPOSE_HEADERS = []
     MAX_AGE = 600
+
+class CookieSettings(BaseSettingsClass):
+    COOKIE_DOMAIN = None
+    COOKIE_NAME = 'access_token'
+    COOKIE_PATH = '/'
+    COOKIE_HTTPONLY = True
+    COOKIE_SECURE = False
+    COOKIE_SAMESITE = 'lax'
+
+class ALLOWED_ROLES(BaseSettingsClass):
+    ADMIN = 'admin'
+    USER = 'user'
+    MANAGER = 'manager'
+    WRITER = 'writer'
+    MODERATOR = 'moderator'

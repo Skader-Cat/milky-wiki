@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -16,19 +17,18 @@ class ProjectFull(BaseModel):
 class ProjectCreate(BaseModel):
     title: str
     description: Optional[str] = None
-
-class ProjectUpdate(BaseModel):
-    title: str
-    description: Optional[str] = None
     owner_id: str
 
+class ProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
 class ProjectResponse(BaseModel):
     id: UUID
     title: str
     description: Optional[str] = None
     owner_id: UUID
-    created_at: str
-    updated_at: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
 
 class ProjectListResponse(BaseModel):
     projects: list[ProjectResponse]
