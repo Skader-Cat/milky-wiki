@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from sqlalchemy import select
 
+import settings
 from models import schemas
 from models.tables.project import Project_User, Project
 from models.tables.user import User
@@ -34,7 +37,10 @@ class UserManager(Manager):
     @classmethod
     async def create_user(cls, user):
         user_data = user.model_dump()
-        user_data["role"] = "user"
+        user_data["created_at"] = datetime.now()
+
+        if user_data["role"] == None or user_data["role"] == "" or user_data["role"] not in settings.ALLOWED_ROLES.get_properties():
+            user_data["role"] = "user"
         await cls.create(User, user_data)
 
     @classmethod
