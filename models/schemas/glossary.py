@@ -19,7 +19,7 @@ class Category(CreateCategory):
 class AddTerminology(BaseModel):
     termin: str
     definition: str
-    categories: list[Category]
+    categories: list[str]
 
 class Terminology(AddTerminology):
     id: UUID

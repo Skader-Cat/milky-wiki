@@ -12,7 +12,7 @@ async def create_category(category: CreateCategory):
     return {"message": "Category created"}
 
 @category_router.get("/get_list")
-async def get_category_list(page: int, size: int):
+async def get_category_list(page: int = 1, size: int = 10):
     return await CategoryManager.get_category_list(page, size)
 
 @category_router.get("/get_category_by_id")
@@ -28,3 +28,12 @@ async def update_category(category_id: UUID, category_info: CreateCategory):
 async def delete_category(category_id: UUID):
     await CategoryManager.delete_category(category_id)
     return {"message": "Category deleted"}
+
+@category_router.get("/get_statistics")
+async def get_category_statistics():
+    return await CategoryManager.get_category_statistics()
+
+
+@category_router.get("/get_author_statistics")
+async def get_author_statistics():
+    return await CategoryManager.get_author_statistics()

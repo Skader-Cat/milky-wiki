@@ -31,7 +31,8 @@ class Manager:
     @classmethod
     async def create(cls, model, data):
         query = insert(model).values(data)
-        await cls._execute_query_and_close(query)
+        result = await cls._execute_query_and_close(query)
+        return result.inserted_primary_key[0]
 
     @classmethod
     async def update(cls, model, id, data):
