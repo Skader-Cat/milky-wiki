@@ -1,7 +1,7 @@
 from sqlalchemy import select, func
 from sqlalchemy.sql.functions import count
 
-from models.tables import Category, TerminologyCategory, Terminology
+from models.tables import Category
 from service import UserManager
 from service.base import Manager
 

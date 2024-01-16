@@ -4,7 +4,7 @@ from sqlalchemy import select, Select, func
 from sqlalchemy.orm import joinedload, Query, join
 
 from models.schemas import AddTerminology
-from models.tables import Glossary, Terminology, TerminologyCategory, Category, User
+from models.tables import Glossary, Category, User
 from service.base import Manager
 from service.category import CategoryManager
 
